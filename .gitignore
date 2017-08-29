@@ -7,3 +7,4 @@ static-serve/
 *.map
 *.pyc
 __pycache__/
+*.sqlite3
