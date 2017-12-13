@@ -1,11 +1,16 @@
 <h1>Tweets</h1>
 <ul>
+{% include "tweets/tweet_search_form.html" %}<br>
 {% for tweet in object_list %}
     <li>
     	<p>{{ tweet.content }}</p>
 		<p>Published: {{ tweet.updated|date }}</p>
     </li>
 {% empty %}
-    <li>No tweets yet.</li>
+	{% if request.GET.q %}
+		<p>No tweets found.</p>
+	{% else %}
+    	<p>No tweets yet.</p>
+	{% endif %}
 {% endfor %}
 </ul>
