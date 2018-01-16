@@ -1,6 +1,62 @@
 {% extends "base.html" %}
 
+{% block script %}
+	<script>
+		function getURLParameter(name) {
+		  return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
+		}
+
+		$(document).ready(function(){
+			var query = getURLParameter("q");
+			var tweetList = [];
+			function parseTweets(){
+				//parse and display tweets or message if no tweets exist yet.
+				if( tweetList.length > 0 ){
+						
+					$.each(tweetList, function(key, value){
+						var content = value.content;
+						var user = value.user;
+						var tweet_id = key;
+						$("#tweet-list").append(
+							"<div class='media'>"+
+							  "<div class='media-body'>"+
+							    "<h5 class='mt-0'>" + user.username + "</h5>" + content +
+							    " | <a href='#'>View</a>"+
+							  "</div></div><hr>"
+						);
+					});
+				} else {
+					var msg = "<p>No tweets have been added yet.</p>";
+					if( query ){
+						msg = "<p>No search results found.</p>";
+					}
+					$("#tweet-list").append(msg);		
+				}
+			}
+
+			$.ajax({
+				url: "{% url 'tweet-api:list' %}",
+				data: {
+					"q": query
+				},
+				method: "GET",
+				success: function(data){
+					tweetList = data;
+					parseTweets();
+
+				},
+				error: function(data){
+					console.log(data);
+					alert("error");
+				}
+			})
+		});
+	</script>
+{% endblock script %}
+
 {% block content %}
+
+
 	<div class="row">
 		<div class="col-sm-3 col-xs-12" style="background-color: red;">
 			<h1>{{ request.user }}</h1>
@@ -10,25 +66,10 @@
 				{% include "tweets/form.html" with form=create_form action_url=create_url  btn_title='Tweet' %}
 			{% endif %}
 			<hr>
-			{% for tweet in object_list %}
-				<div class="media">
-				  {% if tweet.image %}
-				  	<img class="d-flex mr-3" src="..." alt="Generic placeholder image">
-				  {% endif %}
-				  <div class="media-body">
-				    <h5 class="mt-0">{{ tweet.user }}</h5>
-				    {{ tweet.content }}<br>
-				    {{ tweet.timestamp|timesince }} ago | <a href="{{ tweet.get_absolute_url }}">View</a>
-				  </div>
-				</div>
-				<hr>
-			{% empty %}
-				{% if request.GET.q %}
-					<p>No tweets found.</p>
-				{% else %}
-			    	<p>No tweets yet.</p>
-				{% endif %}
-			{% endfor %}
+
+			<div id="tweet-list">
+				
+			</div>
 		</div>
 	</div>
 	
