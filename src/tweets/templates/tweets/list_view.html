@@ -1,16 +1,35 @@
-<h1>Tweets</h1>
-<ul>
-{% include "tweets/tweet_search_form.html" %}<br>
-{% for tweet in object_list %}
-    <li>
-    	<p>{{ tweet.content }}</p>
-		<p>Published: {{ tweet.updated|date }}</p>
-    </li>
-{% empty %}
-	{% if request.GET.q %}
-		<p>No tweets found.</p>
-	{% else %}
-    	<p>No tweets yet.</p>
-	{% endif %}
-{% endfor %}
-</ul>
+{% extends "base.html" %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-sm-3 col-xs-12" style="background-color: red;">
+			<h1>{{ request.user }}</h1>
+		</div>
+		<div class="col-sm-9 col-xs-12">
+			{% if not request.GET.q %}
+				{% include "tweets/form.html" with form=create_form action_url=create_url  btn_title='Tweet' %}
+			{% endif %}
+			<hr>
+			{% for tweet in object_list %}
+				<div class="media">
+				  {% if tweet.image %}
+				  	<img class="d-flex mr-3" src="..." alt="Generic placeholder image">
+				  {% endif %}
+				  <div class="media-body">
+				    <h5 class="mt-0">{{ tweet.user }}</h5>
+				    {{ tweet.content }}<br>
+				    {{ tweet.timestamp|timesince }} ago | <a href="{{ tweet.get_absolute_url }}">View</a>
+				  </div>
+				</div>
+				<hr>
+			{% empty %}
+				{% if request.GET.q %}
+					<p>No tweets found.</p>
+				{% else %}
+			    	<p>No tweets yet.</p>
+				{% endif %}
+			{% endfor %}
+		</div>
+	</div>
+	
+{% endblock content %}

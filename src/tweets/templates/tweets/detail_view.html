@@ -1,3 +1,19 @@
-<h1>{{ object.user }}</h1>
-<p>{{ object.content }}</p>
-<p>Published: {{ object.updated|date }}</p>
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="col-sm-3 col-xs-12" style="background-color: yellow;">
+        <h1>{{ object.user }}</h1>
+    </div>
+    <div class="col-sm-9 col-xs-12">
+            
+        <div class="media">
+          {% if tweet.image %}
+            <img class="d-flex mr-3" src="..." alt="Generic placeholder image">
+          {% endif %}
+          <div class="media-body">
+            {{ object.content }}<br>
+            Published: {{ object.updated|date }}
+          </div>
+        </div>
+    </div>
+{% endblock content %}
